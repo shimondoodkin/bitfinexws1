@@ -63,18 +63,18 @@ var bitfinexws=BitfinexWS1('PUT_KEY_HERE','PUT_SECRET_HERE',
 	{
 	 BTCUSD:
 	 {
-		 snapshot : function(a){ console.log("book BTCUSD snapshot",a)},
-		 update   : function(a){ console.log("book BTCUSD update",a)},
-	     hb       : function(a){ console.log("book BTCUSD hb",a)}
+		 snapshot : function(a){ console.log("bookR0 BTCUSD snapshot",a)},
+		 update   : function(a){ console.log("bookR0 BTCUSD update",a)},
+	     hb       : function(a){ console.log("bookR0 BTCUSD hb",a)}
 	 }	
 	},
 	bookP3F2:
 	{
 	 BTCUSD:
 	 {
-		 snapshot : function(a){ console.log("book BTCUSD snapshot",a)},
-		 update   : function(a){ console.log("book BTCUSD update",a)},
-	     hb       : function(a){ console.log("book BTCUSD hb",a)}
+		 snapshot : function(a){ console.log("bookP3F2 BTCUSD snapshot",a)},
+		 update   : function(a){ console.log("bookP3F2 BTCUSD update",a)},
+	     hb       : function(a){ console.log("bookP3F2 BTCUSD hb",a)}
 	 }	
 	},
 	trades:
