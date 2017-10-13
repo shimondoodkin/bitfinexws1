@@ -105,5 +105,11 @@ parser receives an array of arguments.
 snapshot recevies the array of objects.
  
 
+in the examplpe it uses all the parses i like 
+it is defined here:
+https://github.com/shimondoodkin/bitfinexws1/blob/master/index.js#LL978 
+ 
 to see all the parsers look in the code
+each function parser function is defined here:
 https://github.com/shimondoodkin/bitfinexws1/blob/master/index.js#L439
+
