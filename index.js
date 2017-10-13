@@ -276,7 +276,7 @@ try{
 		//channel.R0
 		var fn=channel[event];
 
-        //if(event=='hb')  hb();  // not required see line above 'bitfinexws.last_hb=Date.now();'
+        //if(event==='hb')  hb();  // not required see line above 'bitfinexws.last_hb=Date.now();'
 		if(fn){
 			var arg=false;
 			if(chanId===0) {
@@ -305,7 +305,7 @@ try{
 					     if(event==='update')   arg=parse_book_update(args);
 					else if(event==='snapshot') arg=parse_book_snapshot(args);
 				}
-				if(event=='hb') arg=parser_book_hb(args);
+				if(event==='hb') arg=parser_book_hb(args);
 			}
 			else if(channel.isTrades){
 				     if(event==='te')       arg=parse_trades_te(args);
@@ -346,7 +346,7 @@ try{
 		else if(data.event==='auth'){ 		// { event: 'auth', status: 'OK', chanId: 0, userId: 11465 }
 			delete data.event;
 			bitfinexws.auth=data;
-			if(data.status=='OK')
+			if(data.status==='OK')
 			{
 				onauth();
 				bitfinexws.subscribe.call(bitfinexws,send);
@@ -357,7 +357,7 @@ try{
 		else if(data.event==='unauth'){ 		// { "event":"unauth", "status":"OK", "chanId":0 }
 			delete data.event;
 			bitfinexws.auth=false;
-			if(data.status=='OK')
+			if(data.status==='OK')
 				onunauth();
 			else
 				onerror(new Error('BitfinexWS1 auth error, status!=\'OK\', data='+JSON.stringify(data)));
@@ -422,7 +422,7 @@ try{
 				channel.isTrades=data.channel==='trades';
 				channel.isTicker=data.channel==='ticker';
 
-				if(channel.name=='book') channel.R0=data.prec==='R0';
+				if(channel.name==='book') channel.R0=data.prec==='R0';
 				chan_id[channel.chanId]=channel;
 			}
 			else
@@ -533,7 +533,7 @@ function parser_book_update(a){
 	}
 	var isbid=line.amount>0;
 	if(line.amount<0) line.amount=-line.amount;
-	if(line.count==0)line.amount=0;
+	if(line.count===0)line.amount=0;
 	return [isbid,line];
 }
 parsers.book_update = parser_book_update ;
@@ -566,7 +566,7 @@ function parser_book_update_convenient_array(a){
 								//COUNT=0 means that you have to remove the price level from your book.
 	]
 	var isbid=line[1]>0;
-	if(line[2]==0)line[1]=0;
+	if(line[2]===0)line[1]=0;
 	else if(line[1]<0) line[1]=-line[1];
 	return [isbid,line];
 }
@@ -593,7 +593,7 @@ function parser_book_update_convenient_array_same_order(a){
 			                     //          positive values mean bid, negative values mean ask.
 	]
 	var isbid=line[2]>0;
-	if(line[1]==0)line[2]=0;
+	if(line[1]===0)line[2]=0;
 	else if(line[2]<0) line[2]=-line[2];
 	return [isbid,line];
 }
@@ -710,7 +710,7 @@ function parser_trades_te(a) {
 			amount: a[3], 	 //		float	Positive means buy, negative means sell
 		 }
 		 //trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
-		 //trade.amount=trade.amount<0?-1:trade.amount;
+		 //if(trade.amount<0)trade.amount=-trade.amount;
 		 return trade;
 }
 parsers.trades_te = parser_trades_te   ;
@@ -725,7 +725,7 @@ function parser_trades_tu(a) {
 			amount: a[4], 	 //		float	Positive means buy, negative means sell
 		 }
 		 //trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
-		 //trade.amount=trade.amount<0?-1:trade.amount;
+		 //if(trade.amount<0)trade.amount=-trade.amount;
 		 return trade;
 }
 parsers.trades_tu = parser_trades_tu ;
@@ -738,7 +738,7 @@ function parser_trades_snapshot_one(a) {
 			amount: a[3], 	 //		float	Positive means buy, negative means sell
 		 }
 		 //trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
-		 //trade.amount=trade.amount<0?-1:trade.amount;
+		 //if(trade.amount<0)trade.amount=-trade.amount;
 		 return trade;
 }
 function parser_trades_snapshot(arr){return arr.map(parser_trades_snapshot_one);}
@@ -753,7 +753,7 @@ function parser_trades_te_convenient(a) {
 			amount: a[3], 	 //		float	Positive means buy, negative means sell
 		 }
 		 trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
-		 trade.amount=trade.amount<0?-1:trade.amount;
+		 if(trade.amount<0)trade.amount=-trade.amount;
 		 return trade;
 }
 parsers.trades_te_convenient = parser_trades_te_convenient ;
@@ -767,7 +767,7 @@ function parser_trades_tu_convenient(a) {
 			amount: a[4], 	 //		float	Positive means buy, negative means sell
 		 }
 		 trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
-		 trade.amount=trade.amount<0?-1:trade.amount;
+		 if(trade.amount<0)trade.amount=-trade.amount;
 		 return trade;
 }
 parsers.trades_tu_convenient = parser_trades_tu_convenient ; 
@@ -780,7 +780,7 @@ function parser_trades_snapshot_convenient_one(a) {
 			amount: a[3], 	 //		float	Positive means buy, negative means sell
 		 }
 		 trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
-		 trade.amount=trade.amount<0?-1:trade.amount;
+		 if(trade.amount<0)trade.amount=-trade.amount;
 		 return trade;
 }
 function parser_trades_snapshot_convenient(arr){return arr.map(parser_trades_snapshot_convenient_one);}
@@ -941,8 +941,8 @@ function parser_account_on_convenient(a) {
 	 order.method=order.type;
 	 delete order.type;
 	 order.type=order.amount>=0?0:1; // 0=buy , 1=sell
-	 order.amount=order.amount<0?-1:order.amount;
-	 order.amount_orig=order.amount_orig<0?-1:order.amount_orig;
+	 if(order.amount<0)order.amount=-order.amount;
+	 if(order.amount_orig<0)order.amount_orig=-order.amount_orig;
 
 	 order.pair=order.symbol.replace(/^[tf](\w{3})(\w{3})$/,"$1/$2");
 	 order.wallet=order.symbol[0]==='t'?'exchange':(order.symbol[0]==='f'?'margin':null);			 
@@ -979,7 +979,7 @@ function parser_account_te(a){
 			order_price: a[7] 	 //		float	Order price
 		 }
 		 //trade.type=trade.amount_executed>=0?0:1; // 0=buy , 1=sell
-		 //trade.amount_executed=trade.amount_executed<0?-1:trade.amount_executed;
+		 //if(trade.amount_executed<0)trade.amount_executed=-trade.amount_executed; 
 		 //trade.order_method=trade.order_type;
 		 //delete trade.order_type;
 		 return trade;
@@ -1001,7 +1001,7 @@ function parser_account_tu(a){
 			fee_currency: a[10] //		string	Fee currency
 		 }
 		 //trade.type=trade.amount_executed>=0?0:1; // 0=buy , 1=sell
-		 //trade.amount_executed=trade.amount_executed<0?-1:trade.amount_executed;
+		 //if(trade.amount_executed<0)trade.amount_executed=-trade.amount_executed; 
 		 //trade.order_method=trade.order_type;
 		 //delete trade.order_type;
 		 return trade;
@@ -1023,7 +1023,7 @@ function parser_account_ts_one(a){
 			fee_currency: a[9] //		string	Fee currency
 		 }
 		 //trade.type=trade.amount_executed>=0?0:1; // 0=buy , 1=sell
-		 //trade.amount_executed=trade.amount_executed<0?-1:trade.amount_executed;
+		 //if(trade.amount_executed<0)trade.amount_executed=-trade.amount_executed; 
 		 //trade.order_method=trade.order_type;
 		 //delete trade.order_type;
 		 return trade;
@@ -1045,7 +1045,7 @@ function parser_account_te_convenient(a){
 			order_price: a[7] 	 //		float	Order price
 		 }
 		 trade.type=trade.amount_executed>=0?0:1; // 0=buy , 1=sell
-		 trade.amount_executed=trade.amount_executed<0?-1:trade.amount_executed;
+		 if(trade.amount_executed<0)trade.amount_executed=-trade.amount_executed; 
 		 trade.order_method=trade.order_type;
 		 delete trade.order_type;
 		 return trade;
@@ -1067,7 +1067,7 @@ function parser_account_tu_convenient(a){
 			fee_currency: a[10] //		string	Fee currency
 		 }
 		 trade.type=trade.amount_executed>=0?0:1; // 0=buy , 1=sell
-		 trade.amount_executed=trade.amount_executed<0?-1:trade.amount_executed;
+		 if(trade.amount_executed<0)trade.amount_executed=-trade.amount_executed; 
 		 trade.order_method=trade.order_type;
 		 delete trade.order_type;
 		 return trade;
@@ -1089,7 +1089,7 @@ function parser_account_ts_convenient_one(a){
 			fee_currency: a[9] //		string	Fee currency
 		 }
 		 trade.type=trade.amount_executed>=0?0:1; // 0=buy , 1=sell
-		 trade.amount_executed=trade.amount_executed<0?-1:trade.amount_executed;
+		 if(trade.amount_executed<0)trade.amount_executed=-trade.amount_executed; 
 		 trade.order_method=trade.order_type;
 		 delete trade.order_type;
 		 return trade;
@@ -1228,7 +1228,7 @@ function subscribe(send) // need to be specified because on self reconnect, happ
 	send({ "event":"subscribe", "channel":"book",   "pair":"tBTCUSD", "prec":"P3", "freq":"F2" });
 	send({ "event":"subscribe", "channel":"book",   "pair":"tBTCUSD", "prec":"R0" });
 }
-//,BitfinexWS1.better_parsers // (optional) my prefered set of parsers, little different from the docs, you can define your own if you like different configuration.            without this, it mutches the official docs.  , the difference from the docs is not an issue. rather good.
+,BitfinexWS1.better_parsers // (optional) my prefered set of parsers, little different from the docs, you can define your own if you like different configuration.            without this, it mutches the official docs.  , the difference from the docs is not an issue. rather good.
 );
 
 
