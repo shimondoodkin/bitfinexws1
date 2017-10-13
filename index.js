@@ -10,48 +10,53 @@ var bitfinexws=BitfinexWS1('PUT_KEY_HERE','PUT_SECRET_HERE',
 {
 	account:
 	{
-	 pn:function(a){ console.log("account pn",a)},
-	 pu:function(a){ console.log("account pu",a)},
-	 pc:function(a){ console.log("account pc",a)},
-	 ps:function(a){ console.log("account ps",a)},
-	 wu:function(a){ console.log("account wu",a)},
-	 ws:function(a){ console.log("account ws",a)},
-	 on:function(a){ console.log("account on",a)},
-	 ou:function(a){ console.log("account ou",a)},
-	 oc:function(a){ console.log("account oc",a)},
-	 os:function(a){ console.log("account os",a)},
-	 ts:function(a){ console.log("account ts",a)},
-	 te:function(a){ console.log("account te",a)},
-	 tu:function(a){ console.log("account tu",a)},
-	 hb:function(a){ console.log("account hb",a)}
+	 pn : function(a){ console.log("account pn",a)},
+	 pu : function(a){ console.log("account pu",a)},
+	 pc : function(a){ console.log("account pc",a)},
+	 ps : function(a){ console.log("account ps",a)},
+	 wu : function(a){ console.log("account wu",a)},
+	 ws : function(a){ console.log("account ws",a)},
+	 on : function(a){ console.log("account on",a)},
+	 ou : function(a){ console.log("account ou",a)},
+	 oc : function(a){ console.log("account oc",a)},
+	 os : function(a){ console.log("account os",a)},
+	 ts : function(a){ console.log("account ts",a)},
+	 te : function(a){ console.log("account te",a)},
+	 tu : function(a){ console.log("account tu",a)},
+	 hb : function(a){ console.log("account hb",a)}
     },
 	book:
 	{
 	 BTCUSD:
 	 {
-		 snapshot:function(a){ console.log("book BTCUSD snapshot",a)},
-		 update  :function(a){ console.log("book BTCUSD update",a)},
-	     hb      :function(a){ console.log("book BTCUSD hb",a)}
+		 snapshot : function(a){ console.log("book BTCUSD snapshot",a)},
+		 update   : function(a){ console.log("book BTCUSD update",a)},
+	     hb       : function(a){ console.log("book BTCUSD hb",a)}
 	 }	
 	},
 	trades:
 	{
 	 BTCUSD:
 	 {
-		 snapshot:function(a){ console.log("trades BTCUSD snapshot",a)},
-		 te      :function(a){ console.log("trades BTCUSD te",a)},
-		 tu      :function(a){ console.log("trades BTCUSD tu",a)},
-	     hb      :function(a){ console.log("trades BTCUSD hb",a)}
+		 snapshot : function(a){ console.log("trades BTCUSD snapshot",a)},
+		 te       : function(a){ console.log("trades BTCUSD te",a)},
+		 tu       : function(a){ console.log("trades BTCUSD tu",a)},
+	     hb       : function(a){ console.log("trades BTCUSD hb",a)}
 	 }	
 	},
 	ticker:
 	{
 	 BTCUSD:
 	 {
-		 update  :function(a){ console.log("ticker BTCUSD update",a)},
-	     hb      :function(a){ console.log("ticker BTCUSD hb",a)}
+		 update  : function(a){ console.log("ticker BTCUSD update",a)},
+	     hb      : function(a){ console.log("ticker BTCUSD hb",a)}
 	 }	
-	}
+	},
+	onpong   : function(){ console.log("onpong")},
+	onready  : function(){ console.log("onready")},
+	onauth   : function(){ console.log("onauth")},
+	onunauth : function(){ console.log("onunauth")},
+	onerror  : function(e){console.log('BitfinexWS1 error', e.stack)}
 },
 function subscribe(send) // need to be specified because on self reconnect, happens and channels need to be resubscribed;
 {
@@ -113,7 +118,7 @@ function BitfinexWS1(API_KEY,API_SECRET,channels,subscribe,parsers)
   var onready = bitfinexws.channels.onready  || function(){};
   var onauth  = bitfinexws.channels.onauth   || function(){};
   var onunauth= bitfinexws.channels.onunauth || function(){};
-  var onerror = bitfinexws.channels.onerror  || function(e) {console.log('error', e.stack);}
+  var onerror = bitfinexws.channels.onerror  || function(e) {console.log('BitfinexWS1 error', e.stack);}
 
   
   var channel_account=chan_name.account||{};

@@ -1,0 +1,26 @@
+{
+  "name": "bitfinexws1",
+  "version": "1.0.0",
+  "description": "bitfinex websocket, v1 , a better , self reconnecting, parsing all responses. Edit",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shimondoodkin/bitfinexws1.git"
+  },
+  "keywords": [
+    "bitfinex",
+    "websocket"
+  ],
+  "author": "Shimon Doodkin <helpmepro1@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shimondoodkin/bitfinexws1/issues"
+  },
+  "homepage": "https://github.com/shimondoodkin/bitfinexws1#readme",
+  "dependencies": {
+    "ws": "^3.2.0"
+  }
+}
