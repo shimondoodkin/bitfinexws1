@@ -1,21 +1,27 @@
 # bitfinexws1
 bitfinex websocket, v1 , a better , self reconnecting, parsing all responses.
 
-this websocket handels reconnection, and heartbeaat, parses and handles all events, 
-allows authentication. parses all messages in to objects,
-you use send  to subscribe as described in the bit finex manual, 
-and this library handles and parses the response, returnes the parsed responses on events you specified
+this websocket handels reconnection, and heartbeat, parses and handles all events, 
+allows authentication. parses all messages into objects,
 
-# BitfinexWS1(API_KEY,API_SECRET,channels_and_events,subscribe,parsers)
-this is a factory method it returns an object with settings.
+you use send method to subscribe to chnnels as described in the bitfinex api v1 manual, 
 
-to use without authentication put "" in API_KEY and  API_SECRET.
+and this library handles and parses the response, on events you specified it returnes the parsed responses in easy to use objects.
+
+## BitfinexWS1(API_KEY,API_SECRET,channels_and_events,subscribe,parsers)
+
+this is a factory method it returns an object with some access to settings and other things. one useful thing is the status of it `bitfinexws.ready (bool)`
+
+to use without authentication put "" in API_KEY and in API_SECRET.
 
 the main channel (0) called account.
-th event names as described in the documentation
+
+the event names are as described in the documentation
+
 the api described at https://docs.bitfinex.com/v1/reference
 
 look at the parsers to know the names of the parameters or just try it...
+
 
 ```javascript
 
@@ -99,3 +105,5 @@ parser receives an array of arguments.
 snapshot recevies the array of objects.
  
 
+to see all the parsers look in the code
+https://github.com/shimondoodkin/bitfinexws1/blob/master/index.js#L439

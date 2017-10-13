@@ -327,7 +327,7 @@ function BitfinexWS1(API_KEY,API_SECRET,channels,subscribe,parsers)
 				bitfinexws.ready=false;
 			}
 			if(data.code===20061) { // Please pause { event: 'info', code: 20061  }  Refreshing data from the Trading Engine. Please pause any activity and resume after receiving the info message 20061 (it should take 10 seconds at most).
-				bitfinexws.paused=true;
+				bitfinexws.paused=false;
 				resubscribe();
 			} 
 		}
