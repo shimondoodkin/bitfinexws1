@@ -1,12 +1,12 @@
 'use strict';
 /*
 
-// onliner for testing //n=function(){};p=function(a){console.log(a)}; var api=require('./bitfinexws1.js')('KEY','SECRET',{account:{hb:n,os:p,ws:p,ps:p}})
+// oneliner for testing //n=function(){};p=function(a){console.log(a)}; var api=require('./bitfinexws1.js')('PUT_KEY_HERE','PUT_SECRET_HERE',{account:{hb:n,os:p,ws:p,ps:p}})
  
 // example:
 
-var BitfinexWS1=require('./bitfinexws1.js');
-var bitfinexws=BitfinexWS1('KEY','SECRET',
+var BitfinexWS1=require('bitfinexws1');
+var bitfinexws=BitfinexWS1('PUT_KEY_HERE','PUT_SECRET_HERE',
 {
 	account:
 	{
