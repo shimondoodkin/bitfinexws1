@@ -9,7 +9,8 @@ you use send method to subscribe to chnnels as described in the bitfinex api v1 
 and this library handles and parses the response, on events you specified it returnes the parsed responses in easy to use objects.
 
 
-//one l
+i did my best to parse all messages.
+
 
 ## BitfinexWS1(API_KEY,API_SECRET,channels_and_events,subscribe,parsers)
 
@@ -109,7 +110,7 @@ function subscribe(send) // need to be specified because on self reconnect, happ
 	send({ "event":"subscribe", "channel":"book",   "pair":"tBTCUSD", "prec":"P3", "freq":"F2" });
 	send({ "event":"subscribe", "channel":"book",   "pair":"tBTCUSD", "prec":"R0" });
 },
- BitfinexWS1.better_parsers // (optional) my prefered set of parsers, little different from the docs, you can define your own if you like different configuration.            without this, it mutches the official docs.  , the difference from the docs is not an issue. rather good.
+ BitfinexWS1.better_parsers // (optional argument, parsers to replace ) my prefered set of parsers, little different from the docs, you can define your own if you like different configuration. without this, it matches the official docs. the difference from the docs is not an issue. rather good.
 );
 
 ```
