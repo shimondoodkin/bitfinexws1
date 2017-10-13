@@ -11,6 +11,8 @@ and this library handles and parses the response, on events you specified it ret
 
 i did my best to parse all messages.
 
+donate bitcoins to: 1QJybGtq3wA3vz8izWvDMRTsrQL3RVDK9T
+
 
 ## BitfinexWS1(API_KEY,API_SECRET,channels_and_events,subscribe,parsers)
 
