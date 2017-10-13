@@ -1,8 +1,12 @@
 'use strict';
 /*
 
-// oneliner for testing //n=function(){};p=function(a){console.log(a)}; var api=require('./bitfinexws1.js')('PUT_KEY_HERE','PUT_SECRET_HERE',{account:{hb:n,os:p,ws:p,ps:p}})
- 
+// one liner for testing //n=function(){};p=function(a){console.log(a)}; var api=require('./bitfinexws1.js')('PUT_KEY_HERE','PUT_SECRET_HERE',{account:{hb:n,os:p,ws:p,ps:p}})
+// or another one:  // require('bitfinexws1').test('PUT_KEY_HERE','PUT_SECRET_HERE' );
+// or another one:  // require('bitfinexws1').test('','' );
+
+
+  
 // example:
 
 var BitfinexWS1=require('bitfinexws1');
@@ -124,6 +128,10 @@ function BitfinexWS1(API_KEY,API_SECRET,channels,subscribe,parsers)
   var channel_account=chan_name.account||{};
   channel_account.chanId=0;
   channel_account.name='account';  
+  channel_account.isAccount=true;
+  channel_account.isBook=false;
+  channel_account.isTrades=false;
+  channel_account.isTicker=false;
   chan_id[channel_account.chanId]=channel_account;
   chan_name[channel_account.name]=channel_account;
 
@@ -156,8 +164,11 @@ function BitfinexWS1(API_KEY,API_SECRET,channels,subscribe,parsers)
 
   wsClient.onopen = function() {
 		wsClient.opened = true;
-		if(!bitfinexws.ready)onready(true);
-		bitfinexws.ready=true;
+		
+		var prev_ready=bitfinexws.ready;
+					   bitfinexws.ready=true;
+		if(!prev_ready)onready(true);
+		
 		console.log('Connection to', wsClient.url, 'opened.');
 
 		if(API_KEY&&API_SECRET)
@@ -191,7 +202,7 @@ function BitfinexWS1(API_KEY,API_SECRET,channels,subscribe,parsers)
    function hb(){bitfinexws.last_hb=Date.now();}
 
  //define parsers
-   if( parsers.book_update )            var parse_book_update           = parsers.book_update ;           else   var parse_book_update           = parser_book_update_asis ;
+   if( parsers.book_update )            var parse_book_update           = parsers.book_update ;           else   var parse_book_update           = parser_book_update ;
    if( parsers.book_snapshot )          var parse_book_snapshot         = parsers.book_snapshot ;         else   var parse_book_snapshot         = parser_book_snapshot_no_parse ; 
    if( parsers.book_snapshot_R0 )       var parse_book_snapshot_R0      = parsers.book_snapshot_R0 ;      else   var parse_book_snapshot_R0      = parser_book_snapshot_R0 ;
    if( parsers.book_update_R0 )         var parse_book_update_R0        = parsers.book_update_R0 ;        else   var parse_book_update_R0        = parser_book_update_R0 ;
@@ -218,7 +229,8 @@ function BitfinexWS1(API_KEY,API_SECRET,channels,subscribe,parsers)
    if( parsers.account_hb )             var parse_account_hb            = parsers.account_hb ;            else   var parse_account_hb            = parser_account_hb ;
 
   wsClient.onmessage = function(data) {
-
+try{
+	
     try {
       data = JSON.parse(data);
     } catch(e) {
@@ -247,11 +259,11 @@ function BitfinexWS1(API_KEY,API_SECRET,channels,subscribe,parsers)
 		else
 		{
 			var n=2;
-			if( channel.name=='book' && data[1]!=='hb' ) {
+			if( channel.isBook && data[1]!=='hb' ) {
 				event='update';
 				n=1;
 			}
-			else if( channel.name=='ticker'&& data[1]!=='hb' ) {
+			else if( channel.isTicker&& data[1]!=='hb' ) {
 				event='update';
 				n=1;
 			}
@@ -268,42 +280,42 @@ function BitfinexWS1(API_KEY,API_SECRET,channels,subscribe,parsers)
 		if(fn){
 			var arg=false;
 			if(chanId===0) {
-				     if(event=='pn') arg=parse_account_pn(args);
-				else if(event=='pu') arg=parse_account_pu(args);
-				else if(event=='pc') arg=parse_account_pc(args);
-				else if(event=='ps') arg=parse_account_ps(args[0]);
-				else if(event=='wu') arg=parse_account_wu(args);
-				else if(event=='ws') arg=parse_account_ws(args[0]);
-				else if(event=='on') arg=parse_account_on(args);
-				else if(event=='ou') arg=parse_account_ou(args);
-				else if(event=='oc') arg=parse_account_oc(args);
-				else if(event=='os') arg=parse_account_os(args[0]);
-				else if(event=='te') arg=parse_account_te(args);
-				else if(event=='tu') arg=parse_account_tu(args);
-				else if(event=='ts') arg=parse_account_ts(args[0]);
-				else if(event=='hb') arg=parse_account_hb(args);
+				     if(event==='pn') arg=parse_account_pn(args);
+				else if(event==='pu') arg=parse_account_pu(args);
+				else if(event==='pc') arg=parse_account_pc(args);
+				else if(event==='ps') arg=parse_account_ps(args[0]);
+				else if(event==='wu') arg=parse_account_wu(args);
+				else if(event==='ws') arg=parse_account_ws(args[0]);
+				else if(event==='on') arg=parse_account_on(args);
+				else if(event==='ou') arg=parse_account_ou(args);
+				else if(event==='oc') arg=parse_account_oc(args);
+				else if(event==='os') arg=parse_account_os(args[0]);
+				else if(event==='te') arg=parse_account_te(args);
+				else if(event==='tu') arg=parse_account_tu(args);
+				else if(event==='ts') arg=parse_account_ts(args[0]);
+				else if(event==='hb') arg=parse_account_hb(args);
 			}
-			else if(channel.name==='book'){
+			else if(channel.isBook){
 				if(channel.R0)
 				{
-					     if(event=='update')   arg=parse_book_update_R0(args);
-					else if(event=='snapshot') arg=parse_book_snapshot_R0(args);
+					     if(event==='update')   arg=parse_book_update_R0(args);
+					else if(event==='snapshot') arg=parse_book_snapshot_R0(args);
 				}
 				else {
-					     if(event=='update')   arg=parse_book_update(args);
-					else if(event=='snapshot') arg=parse_book_snapshot(args);
+					     if(event==='update')   arg=parse_book_update(args);
+					else if(event==='snapshot') arg=parse_book_snapshot(args);
 				}
 				if(event=='hb') arg=parser_book_hb(args);
 			}
-			else if(channel.name==='trades'){
-				     if(event=='te')       arg=parse_trades_te(args);
-				else if(event=='tu')       arg=parse_trades_tu(args);
-				else if(event=='snapshot') arg=parse_trades_snapshot(args);
-				else if(event=='hb')       arg=parse_trades_hb(args); // may return skiped hidden order sequance in the argument
+			else if(channel.isTrades){
+				     if(event==='te')       arg=parse_trades_te(args);
+				else if(event==='tu')       arg=parse_trades_tu(args);
+				else if(event==='snapshot') arg=parse_trades_snapshot(args);
+				else if(event==='hb')       arg=parse_trades_hb(args); // may return skiped hidden order sequance in the argument
 			}
-			else if(channel.name==='ticker'){
-				     if(event=='update')       arg=parse_ticker_update(args);
-				else if(event=='hb')           arg=parse_ticker_hb(args);
+			else if(channel.isTicker){
+				     if(event==='update')       arg=parse_ticker_update(args);
+				else if(event==='hb')           arg=parse_ticker_hb(args);
 			}		
 			if(arg!==false)fn(arg);
 			else 
@@ -359,20 +371,57 @@ function BitfinexWS1(API_KEY,API_SECRET,channels,subscribe,parsers)
 			
 			 // take alrady defined handlers ,when receving channel id
 			if(data.channel && data.pair  ) {
-				if( !chan_name[data.channel] )            chan_name[data.channel]={};
-				if( !chan_name[data.channel][data.pair] ) chan_name[data.channel][data.pair]={};
-				channel=chan_name[data.channel][data.pair];
+
+			
+			    // try find long name channels, that exist:
+				     if( data.prec && data.freq && chan_name[data.channel+data.prec+data.freq]
+                     					        && chan_name[data.channel+data.prec+data.freq][data.pair] ) // like bookR0F0
+										   channel=chan_name[data.channel+data.prec+data.freq][data.pair];
+									   
+				else if( data.prec && data.freq && chan_name[data.channel+data.freq+data.prec]
+												&& chan_name[data.channel+data.freq+data.prec][data.pair] ) // like bookF0R0
+									       channel=chan_name[data.channel+data.freq+data.prec][data.pair];
+									   
+				else if( data.prec  && chan_name[data.channel+data.prec]
+									&& chan_name[data.channel+data.prec][data.pair] ) // like bookR0
+							   channel=chan_name[data.channel+data.prec][data.pair];
+						   
+				else if( data.freq && chan_name[data.channel+data.freq]
+								   && chan_name[data.channel+data.freq][data.pair] ) // like bookF0
+							  channel=chan_name[data.channel+data.freq][data.pair];
+				// short name exists
+				else if(  chan_name[data.channel]
+					   && chan_name[data.channel][data.pair] ) // like book
+			      channel=chan_name[data.channel][data.pair]; 					  
+				// if not exists crate it
+				else if( !chan_name[data.channel][data.pair] )
+				{
+			         if( !chan_name[data.channel] )
+ 			              chan_name[data.channel]={};
+			
+			      channel=chan_name[data.channel][data.pair]={};
+				}
 			}
-			else if(data.channel ){
-				if( !chan_name[data.channel] )            chan_name[data.channel]={};
+			else if(data.channel )
+			{
+				if( !chan_name[data.channel] )
+					 chan_name[data.channel]={};
+				 
 				channel=chan_name[data.channel];
 			}
 			
 			if(channel!==false)
 			{
+				console.log(data)
 				channel.chanId = data.chanId;
 				channel.name   = data.channel;
 				if(data.pair)            channel.pair=data.pair;
+				
+				channel.isAccount=false;
+				channel.isBook=data.channel==='book';
+				channel.isTrades=data.channel==='trades';
+				channel.isTicker=data.channel==='ticker';
+
 				if(channel.name=='book') channel.R0=data.prec==='R0';
 				chan_id[channel.chanId]=channel;
 			}
@@ -382,25 +431,56 @@ function BitfinexWS1(API_KEY,API_SECRET,channels,subscribe,parsers)
 			}
 		}
 		else if(data.event==='error') { 		// { channel: 'book', pair: 'TCUSD', prec: 'P10', freq: 'F3', event: 'error', msg: 'precision: invalid', code: 10300 }
-
+			
 			var channel=false;
-			 // take alrady defined handlers ,when receving channel id
-			if(data.channel && data.pair && chan_name[data.channel] && (channel=chan_name[data.channel][data.pair]) && chan_name[data.channel][data.pair].error) {
-				delete data.event;
-				channel.error(data);
+			var channel=false;
+			
+			// per channel errors probably not required however i have developed it.
+			//
+			// take alrady defined handlers ,when receving channel id
+			if(data.channel && data.pair  ) {
+
+			
+			    // try find long name channels, that exist:
+				     if( data.prec && data.freq && chan_name[data.channel+data.prec+data.freq]
+                     					        && chan_name[data.channel+data.prec+data.freq][data.pair] ) // like bookR0F0
+										   channel=chan_name[data.channel+data.prec+data.freq][data.pair];
+									   
+				else if( data.prec && data.freq && chan_name[data.channel+data.freq+data.prec]
+												&& chan_name[data.channel+data.freq+data.prec][data.pair] ) // like bookF0R0
+									       channel=chan_name[data.channel+data.freq+data.prec][data.pair];
+									   
+				else if( data.prec  && chan_name[data.channel+data.prec]
+									&& chan_name[data.channel+data.prec][data.pair] ) // like bookR0
+							   channel=chan_name[data.channel+data.prec][data.pair];
+						   
+				else if( data.freq && chan_name[data.channel+data.freq]
+								   && chan_name[data.channel+data.freq][data.pair] ) // like bookF0
+							  channel=chan_name[data.channel+data.freq][data.pair];
+				// short name exists
+				else if(  chan_name[data.channel]
+					   && chan_name[data.channel][data.pair] ) // like book
+			      channel=chan_name[data.channel][data.pair]; 					  
+
 			}
-			else if(data.channel && (channel=chan_name[data.channel]) && chan_name[data.channel].error){
+			else if(data.channel && chan_name[data.channel] ){
+				channel=chan_name[data.channel];
+			}
+			var error=new Error( 'BitfinexWS1 error, data='+JSON.stringify(data) );
+			
+			if( channel && channel.error){
 				delete data.event;
-				channel.error(data);
+				channel.error(error);
 			}
 			else
-				onerror( new Error( 'BitfinexWS1 error, data='+JSON.stringify(data) )  );
+				onerror( error  );
 		}
 		else 
 			console.log('BitfinexWS1 unknown event data', data);
 	}
 	else 
 		console.log('BitfinexWS1 Error, unknonwn socket message, not objecct and not array')
+	}catch(e){onerror(e);}
   };
 
   wsClient.onerror = function(e) {
@@ -424,8 +504,16 @@ function BitfinexWS1(API_KEY,API_SECRET,channels,subscribe,parsers)
 
 
 
+
+///parsers
+
+
+var parsers={}
+
+
 function parser_no_parse(a){return a;}
 
+parsers.no_parse = parser_no_parse;
 
 
 //orderbook
@@ -443,11 +531,13 @@ function parser_book_update(a){
 			amount: a[2]       //	float	± Total amount available at that price level.
 			                   //          positive values mean bid, negative values mean ask.
 	}
-	line.isbid=line.amount>0;
+	var isbid=line.amount>0;
 	if(line.amount<0) line.amount=-line.amount;
 	if(line.count==0)line.amount=0;
-	return line;
+	return [isbid,line];
 }
+parsers.book_update = parser_book_update ;
+
 
 function parser_book_snapshot(arr){
 	var asks=[],bids=[],p=parser_book_update;
@@ -459,6 +549,11 @@ function parser_book_snapshot(arr){
 	}
 	return {asks:asks,bids:bids};
 }
+parsers.book_snapshot = parser_book_snapshot ;
+
+// as is version
+var parser_book_snapshot_no_parse=parser_no_parse;
+parsers.book_snapshot_no_parse = parser_book_snapshot_no_parse ;
 
 // arrays are much faster so they make more sense;
 
@@ -475,6 +570,7 @@ function parser_book_update_convenient_array(a){
 	else if(line[1]<0) line[1]=-line[1];
 	return [isbid,line];
 }
+parsers.  book_update_convenient_array  = parser_book_update_convenient_array ;
 
 function parser_book_snapshot_convenient_array(arr){
 	var asks=[],bids=[],p=parser_book_update_convenient_array;
@@ -486,7 +582,7 @@ function parser_book_snapshot_convenient_array(arr){
 	}
 	return {asks:asks,bids:bids};
 }
-
+parsers.book_snapshot_convenient_array = parser_book_snapshot_convenient_array ;
 
 function parser_book_update_convenient_array_same_order(a){
 	var line= [
@@ -501,6 +597,7 @@ function parser_book_update_convenient_array_same_order(a){
 	else if(line[2]<0) line[2]=-line[2];
 	return [isbid,line];
 }
+parsers.book_update_convenient_array_same_order  =  parser_book_update_convenient_array_same_order ;
 
 function parser_book_snapshot_convenient_array_same_order(arr){
 	var asks=[],bids=[],p=parser_book_update_convenient_array_same_order;
@@ -512,9 +609,18 @@ function parser_book_snapshot_convenient_array_same_order(arr){
 	}
 	return {asks:asks,bids:bids};
 }
+parsers.book_snapshot_convenient_array_same_order = parser_book_snapshot_convenient_array_same_order ;
 
 
-var parser_book_snapshot_no_parse=parser_no_parse;
+
+
+
+
+// raw orderbook
+
+
+
+
 
 // arrays are faster so they make more sense;
 function parser_book_snapshot_R0_convenient(arr){
@@ -527,11 +633,7 @@ function parser_book_snapshot_R0_convenient(arr){
 	}
 	return {asks:asks,bids:bids};
 }
-
-
-// raw orderbook
-
-
+parsers.book_snapshot_R0_convenient = parser_book_snapshot_R0_convenient ; 
 
 function parser_book_update_R0_convenient(a){
 	var line= [
@@ -544,6 +646,7 @@ function parser_book_update_R0_convenient(a){
 	if(line[2]<0) line[2]=-line[2];
 	return [isbid,line];  
 }
+parsers.book_update_R0_convenient = parser_book_update_R0_convenient ;
 
 
 function parser_book_update_R0_object(a) {
@@ -557,6 +660,7 @@ function parser_book_update_R0_object(a) {
 	if(line.amount<0) line.amount=-line.amount;
 	return [isbid,line];  
 }
+parsers.book_update_R0_object = parser_book_update_R0_object ;
 
 // arrays are faster so they make more sense;
 function parser_book_snapshot_R0_object(arr){
@@ -569,11 +673,20 @@ function parser_book_snapshot_R0_object(arr){
 	}
 	return {asks:asks,bids:bids};
 }
+parsers.book_snapshot_R0_object = parser_book_snapshot_R0_object;
 
-var parser_book_update_R0=parser_no_parse;
+
+
 // arrays are faster so they make more sense;
-var parser_book_snapshot_R0=parser_no_parse;
 
+var parser_book_update_R0 = parser_no_parse;
+
+parsers.book_update_R0 = parser_book_update_R0   ;
+
+
+var parser_book_snapshot_R0 = parser_no_parse;
+
+parsers.book_snapshot_R0 = parser_book_snapshot_R0   ;
 
 
 
@@ -585,41 +698,29 @@ var parser_book_snapshot_R0=parser_no_parse;
 
 //trades
 
-function parser_trades_te_convenient(a) {
-	var trade= {
-			seq: a[0], 	       //		integer	sequance number
-			trade_id: null, 	 //		integer	Trade database id
-			timestamp: a[1], 	 //		integer	Unix timestamp of the trade.
-			id: a[2],		 	 //		integer	Order id
-			price: a[3], 	 //		float	Execution price
-			amount: a[4], 	 //		float	Positive means buy, negative means sell
-		 }
-		 trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
-		 trade.amount=trade.amount<0?-1:trade.amount;
-		 return trade;
-}
 
-function parser_trades_tu_convenient(a) {
-	var trade= {
-			seq: a[0], 	       //		integer	sequance number
-			trade_id: a[1], 	 //		integer	Trade database id
-			timestamp: a[2], 	 //		integer	Unix timestamp of the trade.
-			id: a[3],		 	 //		integer	Order id
-			price: a[4], 	 //		float	Execution price
-			amount: a[5], 	 //		float	Positive means buy, negative means sell
-		 }
-		 trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
-		 trade.amount=trade.amount<0?-1:trade.amount;
-		 return trade;
-}
-function parser_trades_snapshot_convenient(arr){return arr.map(parser_trades_tu_convenient);}
+
 
 function parser_trades_te(a) {
 	var trade= {
 			seq: a[0], 	       //		integer	sequance number
 //			trade_id: null, 	 //		integer	Trade database id
 			timestamp: a[1], 	 //		integer	Unix timestamp of the trade.
-			id: a[2],		 	 //		integer	Order id
+			price: a[2], 	 //		float	Execution price
+			amount: a[3], 	 //		float	Positive means buy, negative means sell
+		 }
+		 //trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
+		 //trade.amount=trade.amount<0?-1:trade.amount;
+		 return trade;
+}
+parsers.trades_te = parser_trades_te   ;
+
+
+function parser_trades_tu(a) {
+	var trade= {
+			seq: a[0], 	       //		integer	sequance number
+			trade_id: a[1], 	 //		integer	Trade database id
+			timestamp: a[2], 	 //		integer	Unix timestamp of the trade.
 			price: a[3], 	 //		float	Execution price
 			amount: a[4], 	 //		float	Positive means buy, negative means sell
 		 }
@@ -627,21 +728,72 @@ function parser_trades_te(a) {
 		 //trade.amount=trade.amount<0?-1:trade.amount;
 		 return trade;
 }
+parsers.trades_tu = parser_trades_tu ;
 
-function parser_trades_tu(a) {
+function parser_trades_snapshot_one(a) {
 	var trade= {
-			seq: a[0], 	       //		integer	sequance number
-			trade_id: a[1], 	 //		integer	Trade database id
-			timestamp: a[2], 	 //		integer	Unix timestamp of the trade.
-			id: a[3],		 	 //		integer	Order id
-			price: a[4], 	 //		float	Execution price
-			amount: a[5], 	 //		float	Positive means buy, negative means sell
+			trade_id: a[0], 	 //		integer	Trade database id
+			timestamp: a[1], 	 //		integer	Unix timestamp of the trade.
+			price: a[2], 	 //		float	Execution price
+			amount: a[3], 	 //		float	Positive means buy, negative means sell
 		 }
 		 //trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
 		 //trade.amount=trade.amount<0?-1:trade.amount;
 		 return trade;
 }
-function parser_trades_snapshot(arr){return arr.map(parser_trades_tu);}
+function parser_trades_snapshot(arr){return arr.map(parser_trades_snapshot_one);}
+parsers.trades_snapshot = parser_trades_snapshot ;
+
+function parser_trades_te_convenient(a) {
+	var trade= {
+			seq: a[0], 	       //		integer	sequance number
+			trade_id: null, 	 //		integer	Trade database id
+			timestamp: a[1], 	 //		integer	Unix timestamp of the trade.
+			price: a[2], 	 //		float	Execution price
+			amount: a[3], 	 //		float	Positive means buy, negative means sell
+		 }
+		 trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
+		 trade.amount=trade.amount<0?-1:trade.amount;
+		 return trade;
+}
+parsers.trades_te_convenient = parser_trades_te_convenient ;
+
+function parser_trades_tu_convenient(a) {
+	var trade= {
+			seq: a[0], 	       //		integer	sequance number
+			trade_id: a[1], 	 //		integer	Trade database id
+			timestamp: a[2], 	 //		integer	Unix timestamp of the trade.
+			price: a[3], 	 //		float	Execution price
+			amount: a[4], 	 //		float	Positive means buy, negative means sell
+		 }
+		 trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
+		 trade.amount=trade.amount<0?-1:trade.amount;
+		 return trade;
+}
+parsers.trades_tu_convenient = parser_trades_tu_convenient ; 
+
+function parser_trades_snapshot_convenient_one(a) {
+	var trade= {
+			trade_id: a[0], 	 //		integer	Trade database id
+			timestamp: a[1], 	 //		integer	Unix timestamp of the trade.
+			price: a[2], 	 //		float	Execution price
+			amount: a[3], 	 //		float	Positive means buy, negative means sell
+		 }
+		 trade.type=trade.amount>=0?0:1; // 0=buy , 1=sell
+		 trade.amount=trade.amount<0?-1:trade.amount;
+		 return trade;
+}
+function parser_trades_snapshot_convenient(arr){return arr.map(parser_trades_snapshot_convenient_one);}
+parsers.trades_snapshot_convenient = parser_trades_snapshot_convenient ;
+
+
+
+
+
+// ticker
+
+
+
 
 
 function parser_ticker_update(a) {
@@ -659,25 +811,17 @@ function parser_ticker_update(a) {
 		 }
 	 return ticker;
 }
+parsers.ticker_update = parser_ticker_update ;
 
 
-function parser_account_pu_convenient(a) {
-	var position= {
-		pair: a[0], 	       		  //	string	Pair (BTCUSD, …).
-		status: a[1], 	       	  //	string	Status (ACTIVE, CLOSED).
-		amount: a[2], 	       	  //	float	± Size of the position. Positive values means a long position, negative values means a short position.
-		base_price: a[3], 	      //	float	The price at which you entered your position.
-		margin_funding: a[4], 	  //	float	The amount of funding being used for this position.
-		margin_funding_type: a[5] //	int	0 for daily, 1 for term.
-	}
-	position.islong=position.amount>=0;
-	if(position.amount<0)position.amount=-position.amount;
-	return position;
-}
-var parser_account_pn_convenient=parser_account_pu_convenient;
-var parser_account_pc_convenient=parser_account_pu_convenient;
-function parser_account_ps_convenient(arr){return arr.map(parser_account_pu_convenient);}
 
+
+
+//account
+
+
+
+// position
 
 function parser_account_pu(a) {
 	var position= {
@@ -692,9 +836,44 @@ function parser_account_pu(a) {
 	//if(position.amount<0)position.amount=-position.amount;
 	return position;
 }
+parsers.account_pu = parser_account_pu ;
+
 var parser_account_pn=parser_account_pu;
+parsers.account_pn = parser_account_pn ;
+
 var parser_account_pc=parser_account_pu;
+parsers.account_pc = parser_account_pc ;
+
 function parser_account_ps(arr){return arr.map(parser_account_pu);}
+parsers.account_ps = parser_account_ps ;
+
+function parser_account_pu_convenient(a) {
+	var position= {
+		pair: a[0], 	       		  //	string	Pair (BTCUSD, …).
+		status: a[1], 	       	  //	string	Status (ACTIVE, CLOSED).
+		amount: a[2], 	       	  //	float	± Size of the position. Positive values means a long position, negative values means a short position.
+		base_price: a[3], 	      //	float	The price at which you entered your position.
+		margin_funding: a[4], 	  //	float	The amount of funding being used for this position.
+		margin_funding_type: a[5] //	int	0 for daily, 1 for term.
+	}
+	position.islong=position.amount>=0;
+	if(position.amount<0)position.amount=-position.amount;
+	return position;
+}
+parsers.account_pu_convenient = parser_account_pu_convenient ;
+
+var parser_account_pn_convenient=parser_account_pu_convenient;
+parsers.account_pn_convenient = parser_account_pn_convenient ;
+
+var parser_account_pc_convenient=parser_account_pu_convenient;
+parsers.account_pc_convenient = parser_account_pc_convenient ;
+
+function parser_account_ps_convenient(arr){return arr.map(parser_account_pu_convenient);}
+parsers.account_ps_convenient = parser_account_ps_convenient ; 
+
+
+
+//wallet
 
 function parser_account_wu(a) {
 	var wallet= {
@@ -705,7 +884,43 @@ function parser_account_wu(a) {
 	}
 	return wallet;
 }
+parsers.account_wu = parser_account_wu ;
+
 function parser_account_ws(arr){ return arr.map(parser_account_wu); } ;
+parsers.account_ws = parser_account_ws ;
+
+
+
+//order
+
+
+function parser_account_on(a) {
+	var order= {
+		id:  a[0],         //		int	Order ID
+		symbol: a[1],     //		string	Pair (tBTCUSD, …)
+		amount: a[2],     //		float	Positive means buy, negative means sell.
+		amount_orig: a[3], //		float	Original amount
+		type: a[4],        //		string	The type of the order: LIMIT, MARKET, STOP, TRAILING STOP, EXCHANGE MARKET, EXCHANGE LIMIT, EXCHANGE STOP, EXCHANGE TRAILING STOP, FOK, EXCHANGE FOK.
+		order_status: a[5], //		string	Order Status: ACTIVE, EXECUTED, PARTIALLY FILLED, CANCELED
+		price: a[6],        //		float	Price
+		price_avg: a[7],    //		float	Average price
+		timestamp: a[8],    //		int	Millisecond timestamp of creation
+		notify: a[9],          //		int	1 if Notify flag is active, 0 if not
+		hidden: a[10],          //		int	1 if Hidden, 0 if not hidden
+		placed_id: a[11]       //		int	If another order caused this order to be placed (OCO) this will be that other order's ID
+	 }
+	 return order;
+}
+parsers.account_on = parser_account_on ;
+
+var parser_account_ou=parser_account_on;
+parsers.account_ou = parser_account_ou ;
+
+var parser_account_oc=parser_account_on;
+parsers.account_oc = parser_account_oc ;
+
+function parser_account_os(arr){ return arr.map(parser_account_on); } ;
+parsers.account_os = parser_account_os ;
 
 
 function parser_account_on_convenient(a) {
@@ -736,55 +951,62 @@ function parser_account_on_convenient(a) {
 
 	 return order;
 }
+parsers.account_on_convenient = parser_account_on_convenient ;
+
 var parser_account_ou_convenient=parser_account_on_convenient;
+parsers.account_ou_convenient = parser_account_ou_convenient ;
+
 var parser_account_oc_convenient=parser_account_on_convenient;
+parsers.account_oc_convenient = parser_account_oc_convenient ;
+
 function parser_account_os_convenient(arr){ return arr.map(parser_account_on_convenient); } ;
+parsers.account_os_convenient = parser_account_os_convenient ;
 
 
-
-function parser_account_on(a) {
-	var order= {
-		id:  a[0],         //		int	Order ID
-		symbol: a[1],     //		string	Pair (tBTCUSD, …)
-		amount: a[2],     //		float	Positive means buy, negative means sell.
-		amount_orig: a[3], //		float	Original amount
-		type: a[4],        //		string	The type of the order: LIMIT, MARKET, STOP, TRAILING STOP, EXCHANGE MARKET, EXCHANGE LIMIT, EXCHANGE STOP, EXCHANGE TRAILING STOP, FOK, EXCHANGE FOK.
-		order_status: a[5], //		string	Order Status: ACTIVE, EXECUTED, PARTIALLY FILLED, CANCELED
-		price: a[6],        //		float	Price
-		price_avg: a[7],    //		float	Average price
-		timestamp: a[8],    //		int	Millisecond timestamp of creation
-		notify: a[9],          //		int	1 if Notify flag is active, 0 if not
-		hidden: a[10],          //		int	1 if Hidden, 0 if not hidden
-		placed_id: a[11]       //		int	If another order caused this order to be placed (OCO) this will be that other order's ID
-	 }
-	 return order;
-}
-var parser_account_ou=parser_account_on;
-var parser_account_oc=parser_account_on;
-function parser_account_os(arr){ return arr.map(parser_account_on); } ;
+//account trades
 
 
-function parser_account_ts_one_convenient(a){
+function parser_account_te(a){
 	var trade= {
-			trade_id: a[0], 	 //     no trade_id yet
+			seq: a[0], 	 //		integer	sequance number
+			trade_id: null, 	 //     no trade_id yet
 			pair: a[1], 		 //		string	Pair (BTCUSD, …)
 			timestamp: a[2], 	 //		integer	Execution timestamp
 			id: a[3],		 	 //		integer	Order id
 			amount_executed: a[4], 	 //		float	Positive means buy, negative means sell
 			price_executed: a[5], 	 //		float	Execution price
 			order_type: a[6], 	 //		string	Order type
-			order_price: a[7], 	 //		float	Order price
-			fee: a[8], 			 //		float	Fee
-			fee_currency: a[9] //		string	Fee currency
+			order_price: a[7] 	 //		float	Order price
 		 }
-		 trade.type=trade.amount_executed>=0?0:1; // 0=buy , 1=sell
-		 trade.amount_executed=trade.amount_executed<0?-1:trade.amount_executed;
-		 trade.order_method=trade.order_type;
-		 delete trade.order_type;
+		 //trade.type=trade.amount_executed>=0?0:1; // 0=buy , 1=sell
+		 //trade.amount_executed=trade.amount_executed<0?-1:trade.amount_executed;
+		 //trade.order_method=trade.order_type;
+		 //delete trade.order_type;
 		 return trade;
 }
-function parser_account_ts_convenient(arr){ return arr.map(parser_account_ts_one_convenient); } ;
+parsers.account_te = parser_account_te ;
 
+function parser_account_tu(a){
+	var trade= {
+			seq: a[0], 	       //		integer	sequance number
+			trade_id: a[1], 	 //		integer	Trade database id
+			pair: a[2], 		 //		string	Pair (BTCUSD, …)
+			timestamp: a[3], 	 //		integer	Execution timestamp
+			id: a[4],		 	 //		integer	Order id
+			amount_executed: a[5], 	 //		float	Positive means buy, negative means sell
+			price_executed: a[6], 	 //		float	Execution price
+			order_type: a[7], 	 //		string	Order type
+			order_price: a[8], 	 //		float	Order price
+			fee: a[9], 			 //		float	Fee
+			fee_currency: a[10] //		string	Fee currency
+		 }
+		 //trade.type=trade.amount_executed>=0?0:1; // 0=buy , 1=sell
+		 //trade.amount_executed=trade.amount_executed<0?-1:trade.amount_executed;
+		 //trade.order_method=trade.order_type;
+		 //delete trade.order_type;
+		 return trade;
+}
+parsers.account_tu = parser_account_tu ;
 
 
 function parser_account_ts_one(a){
@@ -807,6 +1029,8 @@ function parser_account_ts_one(a){
 		 return trade;
 }
 function parser_account_ts(arr){ return arr.map(parser_account_ts_one); } ;
+parsers.account_ts = parser_account_ts ;
+
 
 function parser_account_te_convenient(a){
 	var trade= {
@@ -826,6 +1050,8 @@ function parser_account_te_convenient(a){
 		 delete trade.order_type;
 		 return trade;
 }
+parsers.account_te_convenient = parser_account_te_convenient ;
+
 function parser_account_tu_convenient(a){
 	var trade= {
 			seq: a[0], 	       //		integer	sequance number
@@ -846,52 +1072,37 @@ function parser_account_tu_convenient(a){
 		 delete trade.order_type;
 		 return trade;
 }
+parsers.account_tu_convenient = parser_account_tu_convenient ;
 
 
-function parser_account_te(a){
+function parser_account_ts_convenient_one(a){
 	var trade= {
-			seq: a[0], 	 //		integer	sequance number
-			trade_id: null, 	 //     no trade_id yet
+			trade_id: a[0], 	 //     no trade_id yet
 			pair: a[1], 		 //		string	Pair (BTCUSD, …)
 			timestamp: a[2], 	 //		integer	Execution timestamp
 			id: a[3],		 	 //		integer	Order id
 			amount_executed: a[4], 	 //		float	Positive means buy, negative means sell
 			price_executed: a[5], 	 //		float	Execution price
 			order_type: a[6], 	 //		string	Order type
-			order_price: a[7] 	 //		float	Order price
+			order_price: a[7], 	 //		float	Order price
+			fee: a[8], 			 //		float	Fee
+			fee_currency: a[9] //		string	Fee currency
 		 }
-		 //trade.type=trade.amount_executed>=0?0:1; // 0=buy , 1=sell
-		 //trade.amount_executed=trade.amount_executed<0?-1:trade.amount_executed;
-		 //trade.order_method=trade.order_type;
-		 //delete trade.order_type;
+		 trade.type=trade.amount_executed>=0?0:1; // 0=buy , 1=sell
+		 trade.amount_executed=trade.amount_executed<0?-1:trade.amount_executed;
+		 trade.order_method=trade.order_type;
+		 delete trade.order_type;
 		 return trade;
 }
-function parser_account_tu(a){
-	var trade= {
-			seq: a[0], 	       //		integer	sequance number
-			trade_id: a[1], 	 //		integer	Trade database id
-			pair: a[2], 		 //		string	Pair (BTCUSD, …)
-			timestamp: a[3], 	 //		integer	Execution timestamp
-			id: a[4],		 	 //		integer	Order id
-			amount_executed: a[5], 	 //		float	Positive means buy, negative means sell
-			price_executed: a[6], 	 //		float	Execution price
-			order_type: a[7], 	 //		string	Order type
-			order_price: a[8], 	 //		float	Order price
-			fee: a[9], 			 //		float	Fee
-			fee_currency: a[10] //		string	Fee currency
-		 }
-		 //trade.type=trade.amount_executed>=0?0:1; // 0=buy , 1=sell
-		 //trade.amount_executed=trade.amount_executed<0?-1:trade.amount_executed;
-		 //trade.order_method=trade.order_type;
-		 //delete trade.order_type;
-		 return trade;
-}
+function parser_account_ts_convenient(arr){ return arr.map(parser_account_ts_convenient_one); } ;
+parsers.account_ts_convenient = parser_account_ts_convenient ;
+
 
 
 function parser_account_hb(a){
-	var trade= {
+	var trade= a.length?{
 			seq: a[0], 	       //	may have	integer	sequance number // i guess it is emited on hidden trades on parser_trades_hb
-		 }
+		 }:{};
 		 return trade;
 }
 var parser_book_hb=parser_account_hb;
@@ -903,72 +1114,6 @@ var parser_ticker_hb=parser_account_hb;
 // exports:
 
 module.exports = BitfinexWS1
-
-var parsers={}
-
-parsers.book_update                                =    parser_book_update      ;
-parsers.book_snapshot                              =    parser_book_snapshot    ;
-parsers.book_snapshot_no_parse                     =    parser_book_snapshot_no_parse   ;
-
-parsers.  book_update_convenient_array             =      parser_book_update_convenient_array ; // preffered - same order as bitstamp and others
-parsers.book_snapshot_convenient_array             =    parser_book_snapshot_convenient_array ;// preffered
-                                                   
-parsers.  book_update_convenient_array_same_order  =      parser_book_update_convenient_array_same_order   ;
-parsers.book_snapshot_convenient_array_same_order  =    parser_book_snapshot_convenient_array_same_order   ;
-
-parsers.book_update_R0                             =    parser_book_update_R0   ;
-parsers.book_update_R0_object                      =    parser_book_update_R0_object   ;
-parsers.book_snapshot_R0                           =    parser_book_snapshot_R0   ;
-parsers.book_snapshot_R0_object                    =    parser_book_snapshot_R0_object   ;
-
-parsers.book_snapshot_R0_convenient                =    parser_book_snapshot_R0_convenient         ; // preffered
-parsers.book_update_R0_convenient                  =    parser_book_update_R0_convenient           ; // preffered
-
-
-parsers.trades_te                                  =    parser_trades_te   ;
-parsers.trades_tu                                  =    parser_trades_tu   ;
-parsers.trades_snapshot                            =    parser_trades_snapshot   ;
-
-parsers.trades_te_convenient                       =    parser_trades_te_convenient                ; // preffered
-parsers.trades_tu_convenient                       =    parser_trades_tu_convenient                ; // preffered
-parsers.trades_snapshot_convenient                 =    parser_trades_snapshot_convenient          ; // preffered
-
-parsers.ticker_update                              =    parser_ticker_update            ;
-
-parsers.account_pu                                 =    parser_account_pu   ;
-parsers.account_pn                                 =    parser_account_pn   ;
-parsers.account_pc                                 =    parser_account_pc   ;
-parsers.account_ps                                 =    parser_account_ps   ;
-                                                  
-parsers.account_pu_convenient                      =    parser_account_pu_convenient   ; // preffered
-parsers.account_pn_convenient                      =    parser_account_pn_convenient   ; // preffered
-parsers.account_pc_convenient                      =    parser_account_pc_convenient   ; // preffered
-parsers.account_ps_convenient                      =    parser_account_ps_convenient   ; // preffered 
-
-parsers.account_wu                                 =    parser_account_wu               ;
-parsers.account_ws                                 =    parser_account_ws               ;
-                                                  
-parsers.account_on                                 =    parser_account_on   ;
-parsers.account_ou                                 =    parser_account_ou   ;
-parsers.account_oc                                 =    parser_account_oc   ;
-parsers.account_os                                 =    parser_account_os   ;
-
-parsers.account_on_convenient                      =    parser_account_on_convenient   ; // preffered
-parsers.account_ou_convenient                      =    parser_account_ou_convenient   ; // preffered
-parsers.account_oc_convenient                      =    parser_account_oc_convenient   ; // preffered
-parsers.account_os_convenient                      =    parser_account_os_convenient   ; // preffered
-
-
-parsers.account_te                                 =    parser_account_te   ;
-parsers.account_tu                                 =    parser_account_tu   ;
-parsers.account_ts                                 =    parser_account_ts   ;
-
-parsers.account_te_convenient                      =    parser_account_te_convenient   ; // preffered
-parsers.account_tu_convenient                      =    parser_account_tu_convenient   ; // preffered
-parsers.account_ts_convenient                      =    parser_account_ts_convenient   ; // preffered
-
-
-
 module.exports.parsers=parsers;
 
 
@@ -1007,61 +1152,83 @@ account_ts: BitfinexWS1.parsers.account_ts_convenient, // array, of same as abov
  
 module.exports.test=function(API_KEY,API_SECRET) {
 	
+var print=true;
 var bitfinexws=BitfinexWS1(
 API_KEY, // key
 API_SECRET, // secret
 { // events
 	account:
 	{
-	 pn:function(a){ console.log("account pn",a)},
-	 pu:function(a){ console.log("account pu",a)},
-	 pc:function(a){ console.log("account pc",a)},
-	 ps:function(a){ console.log("account ps",a)},
-	 wu:function(a){ console.log("account wu",a)},
-	 ws:function(a){ console.log("account ws",a)},
-	 on:function(a){ console.log("account on",a)},
-	 ou:function(a){ console.log("account ou",a)},
-	 oc:function(a){ console.log("account oc",a)},
-	 os:function(a){ console.log("account os",a)},
-	 ts:function(a){ console.log("account ts",a)},
-	 te:function(a){ console.log("account te",a)},
-	 tu:function(a){ console.log("account tu",a)},
-	 hb:function(a){ console.log("account hb",a)}
+	 pn:function(a){ if(print)console.log("account pn",a)},
+	 pu:function(a){ if(print)console.log("account pu",a)},
+	 pc:function(a){ if(print)console.log("account pc",a)},
+	 ps:function(a){ if(print)console.log("account ps",a)},
+	 wu:function(a){ if(print)console.log("account wu",a)},
+	 ws:function(a){ if(print)console.log("account ws",a)},
+	 on:function(a){ if(print)console.log("account on",a)},
+	 ou:function(a){ if(print)console.log("account ou",a)},
+	 oc:function(a){ if(print)console.log("account oc",a)},
+	 os:function(a){ if(print)console.log("account os",a)},
+	 ts:function(a){ if(print)console.log("account ts",a)},
+	 te:function(a){ if(print)console.log("account te",a)},
+	 tu:function(a){ if(print)console.log("account tu",a)},
+	 hb:function(a){ if(print)console.log("account hb",a)}
     },
 	book:
 	{
 	 BTCUSD:
 	 {
-		 snapshot:function(a){ console.log("book BTCUSD snapshot",a)},
-		 update  :function(a){ console.log("book BTCUSD update",a)},
-	     hb      :function(a){ console.log("book BTCUSD hb",a)}
+		 snapshot:function(a){ if(print)console.log("book BTCUSD snapshot",a)},
+		 update  :function(a){ if(print)console.log("book BTCUSD update",a)},
+	     hb      :function(a){ if(print)console.log("book BTCUSD hb",a)}
+	 }	
+	},
+	bookR0:
+	{
+	 BTCUSD:
+	 {
+		 snapshot:function(a){ if(print)console.log("bookR0 BTCUSD snapshot",a)},
+		 update  :function(a){ if(print)console.log("bookR0 BTCUSD update",a)},
+	     hb      :function(a){ if(print)console.log("bookR0 BTCUSD hb",a)}
+	 }	
+	},
+	bookP3F2:
+	{
+	 BTCUSD:
+	 {
+		 snapshot:function(a){ if(print)console.log("bookR0 BTCUSD snapshot",a)},
+		 update  :function(a){ if(print)console.log("bookR0 BTCUSD update",a)},
+	     hb      :function(a){ if(print)console.log("bookR0 BTCUSD hb",a)}
 	 }	
 	},
 	trades:
 	{
 	 BTCUSD:
 	 {
-		 snapshot:function(a){ console.log("trades BTCUSD snapshot",a)},
-		 te      :function(a){ console.log("trades BTCUSD te",a)},
-		 tu      :function(a){ console.log("trades BTCUSD tu",a)},
-	     hb      :function(a){ console.log("trades BTCUSD hb",a)}
+		 snapshot:function(a){ if(print)console.log("trades BTCUSD snapshot",a)},
+		 te      :function(a){ if(print)console.log("trades BTCUSD te",a)},
+		 tu      :function(a){ if(print)console.log("trades BTCUSD tu",a)},
+	     hb      :function(a){ if(print)console.log("trades BTCUSD hb",a)}
 	 }	
 	},
 	ticker:
 	{
 	 BTCUSD:
 	 {
-		 update  :function(a){ console.log("ticker BTCUSD update",a)},
-	     hb      :function(a){ console.log("ticker BTCUSD hb",a)}
+		 update  :function(a){ if(print)console.log("ticker BTCUSD update",a)},
+	     hb      :function(a){ if(print)console.log("ticker BTCUSD hb",a)}
 	 }	
 	}
 },
 function subscribe(send) // need to be specified because on self reconnect, happens and channels need to be resubscribed;
 {
 	send({ "event":"subscribe", "channel":"ticker", "pair":"tBTCUSD"});
+	send({ "event":"subscribe", "channel":"trades", "pair":"tBTCUSD"});
 	send({ "event":"subscribe", "channel":"book",   "pair":"tBTCUSD", "prec":"P3", "freq":"F1" });
-},
- BitfinexWS1.better_parsers // (optional) my prefered set of parsers, little different from the docs, you can define your own if you like different configuration.            without this, it mutches the official docs.  , the difference from the docs is not an issue. rather good.
+	send({ "event":"subscribe", "channel":"book",   "pair":"tBTCUSD", "prec":"P3", "freq":"F2" });
+	send({ "event":"subscribe", "channel":"book",   "pair":"tBTCUSD", "prec":"R0" });
+}
+//,BitfinexWS1.better_parsers // (optional) my prefered set of parsers, little different from the docs, you can define your own if you like different configuration.            without this, it mutches the official docs.  , the difference from the docs is not an issue. rather good.
 );
 
 

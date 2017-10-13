@@ -8,6 +8,9 @@ you use send method to subscribe to chnnels as described in the bitfinex api v1 
 
 and this library handles and parses the response, on events you specified it returnes the parsed responses in easy to use objects.
 
+
+//one l
+
 ## BitfinexWS1(API_KEY,API_SECRET,channels_and_events,subscribe,parsers)
 
 this is a factory method it returns an object with some access to settings and other things. one useful thing is the status of it `bitfinexws.ready (bool)`
@@ -56,6 +59,24 @@ var bitfinexws=BitfinexWS1('PUT_KEY_HERE','PUT_SECRET_HERE',
 	     hb       : function(a){ console.log("book BTCUSD hb",a)}
 	 }	
 	},
+	bookR0:
+	{
+	 BTCUSD:
+	 {
+		 snapshot : function(a){ console.log("book BTCUSD snapshot",a)},
+		 update   : function(a){ console.log("book BTCUSD update",a)},
+	     hb       : function(a){ console.log("book BTCUSD hb",a)}
+	 }	
+	},
+	bookP3F2:
+	{
+	 BTCUSD:
+	 {
+		 snapshot : function(a){ console.log("book BTCUSD snapshot",a)},
+		 update   : function(a){ console.log("book BTCUSD update",a)},
+	     hb       : function(a){ console.log("book BTCUSD hb",a)}
+	 }	
+	},
 	trades:
 	{
 	 BTCUSD:
@@ -83,7 +104,10 @@ var bitfinexws=BitfinexWS1('PUT_KEY_HERE','PUT_SECRET_HERE',
 function subscribe(send) // need to be specified because on self reconnect, happens and channels need to be resubscribed;
 {
 	send({ "event":"subscribe", "channel":"ticker", "pair":"tBTCUSD"});
-	send({ "event":"subscribe", "channel":"book", "pair":"tBTCUSD", "prec":"P3", "freq":"F1" });
+	send({ "event":"subscribe", "channel":"trades", "pair":"tBTCUSD"});
+	send({ "event":"subscribe", "channel":"book",   "pair":"tBTCUSD", "prec":"P3", "freq":"F1" });
+	send({ "event":"subscribe", "channel":"book",   "pair":"tBTCUSD", "prec":"P3", "freq":"F2" });
+	send({ "event":"subscribe", "channel":"book",   "pair":"tBTCUSD", "prec":"R0" });
 },
  BitfinexWS1.better_parsers // (optional) my prefered set of parsers, little different from the docs, you can define your own if you like different configuration.            without this, it mutches the official docs.  , the difference from the docs is not an issue. rather good.
 );
@@ -108,8 +132,7 @@ snapshot recevies the array of objects.
 in the examplpe it uses all the parses i like 
 it is defined here:
 https://github.com/shimondoodkin/bitfinexws1/blob/master/index.js#LL978 
- 
+
 to see all the parsers look in the code
 each function parser function is defined here:
 https://github.com/shimondoodkin/bitfinexws1/blob/master/index.js#L439
-
