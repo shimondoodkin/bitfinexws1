@@ -1,7 +1,7 @@
 {
   "name": "bitfinexws1",
-  "version": "1.1.1",
-  "description": "bitfinex websocket, v1 , a better , self reconnecting, parsing all responses. Edit",
+  "version": "1.1.2",
+  "description": "bitfinex websocket, v1 , a better , self reconnecting, parsing all responses.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

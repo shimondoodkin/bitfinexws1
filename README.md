@@ -116,23 +116,36 @@ function subscribe(send) // need to be specified because on self reconnect, happ
 
 
 idea: 
-is possible to inherit from BitfinexWS1.better_parsers to adapt to mdify part of it:  
+
+is possible to inherit from BitfinexWS1.better_parsers to modify just a part of it:  
+
+```javascript
 var myparsers={
- book_snapshot: BitfinexWS1.parsers.book_snapshot_no_parse
+ book_snapshot: BitfinexWS1.parsers.no_parse
 };
 myparsers.__proto__=BitfinexWS1.better_parsers;
+```
 
-is possible to put reference to your parsers methods
 
+## parser
 
-parser receives an array of arguments.
-snapshot recevies the array of objects.
+update parser receives an array of arguments.
+
+snapshot parser  recevies the array of objects.
  
 
+
+is possible to put reference to your parsers methods
+like i did, i made with better parsers
+
 in the examplpe it uses all the parses i like 
-it is defined here:
-https://github.com/shimondoodkin/bitfinexws1/blob/master/index.js#LL978 
+it is defined here: (look for line ' module.exports.better_parsers={  ' )
+https://github.com/shimondoodkin/bitfinexws1/blob/master/index.js#L1123 
+
 
 to see all the parsers look in the code
-each function parser function is defined here:
-https://github.com/shimondoodkin/bitfinexws1/blob/master/index.js#L439
+each function parser function is defined here: (look for line ' ///parsers  ' )
+https://github.com/shimondoodkin/bitfinexws1/blob/master/index.js#L508
+
+
+
