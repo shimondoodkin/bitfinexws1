@@ -1,3 +1,7 @@
+// "author": "Samuel Reed <samuel.trace.reed@gmail.com> (http://strml.net/)",
+// "license": "MIT",
+// from https://github.com/BitMEX/api-connectors/tree/master/official-ws/nodejs
+
 'use strict';
 const WebSocket = require('ws');
 
