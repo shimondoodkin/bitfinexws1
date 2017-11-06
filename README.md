@@ -138,15 +138,15 @@ snapshot parser  recevies the array of objects.
  
 
 
-is possible to put reference to your parsers methods
-like i did, i made with better parsers
+it is possible to put reference to your parser methods.
+like i did, as i made with better parsers.
 
-in the examplpe it uses all the parses i like 
+in the examplpe it uses all the parses i like.
 it is defined here: (look for line ' module.exports.better_parsers={  ' )
 https://github.com/shimondoodkin/bitfinexws1/blob/master/index.js#L1123 
 
 
-to see all the parsers look in the code
+to see all the parsers look in the code.
 each function parser function is defined here: (look for line ' ///parsers  ' )
 https://github.com/shimondoodkin/bitfinexws1/blob/master/index.js#L508
 
